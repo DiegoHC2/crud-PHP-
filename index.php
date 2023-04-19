@@ -16,21 +16,26 @@
 <body>
 
    <?php 
-   
+   // Verificar se tem dado salvo no POST para dar sequencia ao codigo
    if(count($_POST)>0){
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $error = array();
-    
+    //Apurar se existem inputs em branco e examinar se o email foi digitado corretamente
             if(!empty($nome) and !empty($email)){
                 if(filter_var($email, FILTER_VALIDATE_EMAIL)){
+                    //Caso não tenha um erro gravado na variável o código irá prosseguir
                     if($error == null){
+                        // Gravo em uma variável um código SQL para injetar no Banco de dados
                         $sql_code = "INSERT INTO funcionarios (Nome, Email) VALUES ('$nome','$email')";
                         $vsucess = $mysqli->query($sql_code) or die();
+                        //Se a  variável retornar 'true' nos retorna um feedback
+                        if($vsucess){
                             echo "Cadastro efetuado com sucesso!";
                             unset($_POST);
+                        }
                     }
-                    
+                    // Feedback de erros
                     } else {
                        $error = "Favor inserir um email valido!";
                         echo $error;
@@ -41,7 +46,7 @@
             }
    }
 
-
+// injeção de SQL no BD
    $sql_table_code = "SELECT * FROM funcionarios";
    $sql_code = $mysqli->query($sql_table_code);
    $users = $sql_code->num_rows;
@@ -51,10 +56,13 @@
    
    
    ?>
+   
     <form action="" method = "POST">
     
     <fieldset>
         <legend>Cadastro de Usuários </legend>
+                                                     <!-- No value utilizo o metodo $_POST para o usuário
+                                                      não precisar digitar novamente os valores em caso de erro -->
         <input type="text" name="nome" placeholder="Digite o Nome" value="<?php if(isset($_POST['nome'])) echo $_POST['nome'];?>">
         <input type="text" name="email" placeholder="Digite o Email" value="<?php if(isset($_POST['email'])) echo $_POST['email'];?>">
         
@@ -75,12 +83,18 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Aqui utilizo um metodo de PHP com HTML, em caso do if retornar TRUE ele 
+            libera a tag HTML posta dentro do if
+            (No caso verifiquei se há usuários no BD, caso não tenha ele retorna um texto) -->
 <?php if($users == 0) { ?>
     <tr>
         <td coldspan="7">Nenhum usuário cadastrado !</td>
     </tr>      
-<?php  } else while($db = $sql_code->fetch_assoc()) {{?>
+<?php  // Utilizando o fetch_assoch para fazer um loop no BD 
+} else while($db = $sql_code->fetch_assoc()) {{?>
     <tr>
+        <!--Aqui utilizo um LOOP em conjunto com HTML + PHP, fazendo que cada registro que o loop ache ele 
+            escreva  um HTML  contendo os dados ID, Nome e Email-->
         <td><?php echo $db['ID'];?></td>
         <td><?php echo $db['Nome'];?></td>
         <td><?php echo $db['Email'];?></td>
@@ -94,6 +108,7 @@
 </table>
 </div>
     </form>  
+    <!-- Css básico para retirar decoração de link e alterar a cor do icone Trash-->
     <style> #trash{
         text-decoration: none;
         color: red; 
