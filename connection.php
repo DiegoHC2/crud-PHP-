@@ -1,5 +1,7 @@
 <?php
 
+//configurar a conexão com o banco de dados, utilizei o metodo MySQLI
+
 $host = "localhost";
 $bancodedados = "loja";
 $user = "root";
